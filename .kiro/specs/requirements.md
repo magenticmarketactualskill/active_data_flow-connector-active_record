@@ -2,18 +2,20 @@
 
 ## Introduction
 
-This document specifies the requirements for the `active_data_flow-active_record` gem, which provides Sink implementation for writing data to Rails database tables using ActiveRecord.
+This document specifies the requirements for the `active_data_flow-active_record` gem, which provides Source and Sink implementations for reading from and writing data to Rails database tables using ActiveRecord.
 
 **Dependencies:**
-- `active_data_flow` (core) - Provides Sink base class
+- `active_data_flow` (core) - Provides Source and Sink base classes
 
-This connector gem extends the core `active_data_flow` gem with database writing capabilities, leveraging Rails ActiveRecord for ORM functionality.
+This connector gem extends the core `active_data_flow` gem with database read and write capabilities, leveraging Rails ActiveRecord for ORM functionality.
 
 ## Glossary
 
 - **ActiveRecord**: Rails ORM for database access
 - **Model**: An ActiveRecord model class representing a database table
 - **Batch Insert**: Inserting multiple records in a single database transaction
+- **Batch Read**: Reading multiple records in a single database query
+- **Cursor**: A database mechanism for iterating through query results efficiently
 
 ## Requirements
 
@@ -100,3 +102,75 @@ This connector gem extends the core `active_data_flow` gem with database writing
 3. THE ActiveRecord sink SHALL use prepared statements when possible
 4. THE ActiveRecord sink SHALL support connection-specific optimizations
 5. THE ActiveRecord sink SHALL provide metrics for write performance
+
+### Requirement 8: ActiveRecord Source
+
+**User Story:** As a developer, I want an ActiveRecord source, so that I can read data from database tables.
+
+#### Acceptance Criteria
+
+1. THE ActiveRecord gem SHALL provide an ActiveDataFlow::Source::ActiveRecord class
+2. THE ActiveRecord source SHALL accept model_name configuration
+3. THE ActiveRecord source SHALL implement the each method to iterate records
+4. THE ActiveRecord source SHALL resolve model_name to the ActiveRecord class
+5. THE ActiveRecord source SHALL handle query errors gracefully
+
+### Requirement 9: Query Configuration
+
+**User Story:** As a developer, I want flexible query options, so that I can filter and order data.
+
+#### Acceptance Criteria
+
+1. THE ActiveRecord source SHALL support where configuration for filtering
+2. THE ActiveRecord source SHALL support order configuration for sorting
+3. THE ActiveRecord source SHALL support limit configuration for result size
+4. THE ActiveRecord source SHALL support select configuration for column selection
+5. THE ActiveRecord source SHALL support includes configuration for eager loading
+
+### Requirement 10: Batch Reading
+
+**User Story:** As a developer, I want batch reads, so that I can process large datasets efficiently.
+
+#### Acceptance Criteria
+
+1. THE ActiveRecord source SHALL support batch_size configuration
+2. WHEN batch_size is set, THE ActiveRecord source SHALL use find_each for iteration
+3. THE ActiveRecord source SHALL load records in batches to manage memory
+4. THE ActiveRecord source SHALL support configurable batch size
+5. THE ActiveRecord source SHALL handle batch boundaries correctly
+
+### Requirement 11: Streaming Support
+
+**User Story:** As a developer, I want streaming reads, so that I can process data without loading everything into memory.
+
+#### Acceptance Criteria
+
+1. THE ActiveRecord source SHALL yield records one at a time
+2. THE ActiveRecord source SHALL not load all records into memory at once
+3. THE ActiveRecord source SHALL use database cursors when available
+4. THE ActiveRecord source SHALL support large result sets efficiently
+5. THE ActiveRecord source SHALL release database resources after iteration
+
+### Requirement 12: Connection Management for Source
+
+**User Story:** As a developer, I want proper connection handling for reads, so that database connections are managed efficiently.
+
+#### Acceptance Criteria
+
+1. THE ActiveRecord source SHALL use Rails connection pool
+2. THE ActiveRecord source SHALL release connections after reads
+3. THE ActiveRecord source SHALL handle connection timeouts
+4. THE ActiveRecord source SHALL support multiple database configurations
+5. THE ActiveRecord source SHALL validate database connectivity on initialization
+
+### Requirement 13: Performance Optimization for Source
+
+**User Story:** As a developer, I want optimized reads, so that I can achieve maximum throughput.
+
+#### Acceptance Criteria
+
+1. THE ActiveRecord source SHALL support readonly mode for performance
+2. THE ActiveRecord source SHALL support pluck for single column reads
+3. THE ActiveRecord source SHALL use select to limit columns loaded
+4. THE ActiveRecord source SHALL support connection-specific optimizations
+5. THE ActiveRecord source SHALL provide metrics for read performance
