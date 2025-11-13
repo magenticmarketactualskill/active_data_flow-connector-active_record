@@ -1,7 +1,7 @@
 # ActiveDataFlow ActiveRecord Connector
 
 A connector gem for ActiveDataFlow that provides Source and Sink implementations for reading from and writing to Rails database tables using ActiveRecord.
-
+x
 ## Installation
 
 Add this line to your application's Gemfile:
